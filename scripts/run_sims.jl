@@ -45,16 +45,20 @@ function diagonalize_lattice(sim_params::Dict)
     return output_d
 end
 
-# Computation parameters
-sim_params = Dict{String, Any}(
-    "numsites" => 50, 
-    "numz" => 2^10,     
-    "depth" => 9,
-    "radius" => 0,
-)
+# Depth scan
 
-soln = diagonalize_lattice(sim_params)
-@tagsave(datadir("sims", savename(sim_params, "jld2")), soln)
-
-firstsim = readdir(datadir("sims"))[1]
-wload(datadir("sims", firstsim))
+depths = range(50, 300, step=25)
+for depth in depths
+    sim_params = Dict{String, Any}(
+        "numsites" => 50, 
+        "numz" => 2^11,     
+        "depth" => depth,
+        "radius" => 0,
+    )
+    soln = diagonalize_lattice(sim_params)
+    @tagsave(datadir("sims", savename(sim_params, "jld2")), soln)
+    print(string(depth)*" Er done...")
+end
+print("Finished")
+# firstsim = readdir(datadir("sims"))[1]
+# wload(datadir("sims", firstsim))
