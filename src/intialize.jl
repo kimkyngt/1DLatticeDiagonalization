@@ -1,4 +1,4 @@
-using PhysicalConstants, PhysicalConstants.CODATA2018, Unitful, UnitfulRecipes, LaTeXStrings, Plots, LinearAlgebra, QuantumOptics	
+using PhysicalConstants, PhysicalConstants.CODATA2018, Unitful, UnitfulRecipes, LaTeXStrings, Plots, LinearAlgebra, QuantumOptics, OhMyREPL
 
 c = SpeedOfLightInVacuum
 h = PlanckConstant

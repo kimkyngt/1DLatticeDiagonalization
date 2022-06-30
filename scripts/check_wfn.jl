@@ -18,4 +18,5 @@ function draw_wfn(df, data_indx)
     plot!(zz/π, abs2.(ψ_nz1))
     return fig
 end
-draw_wfn(df, findfirst(df[:, "depth"] .== 20))
+draw_wfn(df, findfirst(df[:, "depth"] .== 11))
+

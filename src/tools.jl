@@ -18,26 +18,25 @@ end
 function find_center_index(soln, zz)
     """Find x=0 eigen state's index"""
 	zexpt = [get_mean_position(soln.vectors[:,ii], zz) for ii in range(1, size(soln.vectors)[1])]
-	centered_indices = findall(abs.(zexpt) .< 0.1)
+	centered_indices = findall(abs.(zexpt) .< 0.05)
 	return centered_indices
 end
 
-function plot_eigen_spectrum(F)
+function plot_eigen_spectrum(df, ii)
+    F = df[ii, "solution"]
+    zz = df[ii, "zz"]
     maxbandnum = 3
-	fig = plot([get_mean_position(real.(F.vectors[:,ii]), zz) for ii in range(1, numsites*maxbandnum)],
-    real.(F.values[1:numsites*maxbandnum]),
+    numsites = df[ii, "numsites"]
+    U_0 = df[ii, "depth"]
+
+	fig = plot(
+        [get_mean_position(real.(F.vectors[:,ii]), zz) for ii in range(1, numsites*maxbandnum)],
+        real.(F.values[1:numsites*maxbandnum]),
 		marker=:hline,markerstrokewidth=3, 
-        markersize=6,lw=0, label=L"\langle z \rangle"*" vs Eigen energy")
-	
+        markersize=6,lw=0, label=L"\langle z \rangle"*" vs Eigen energy",
+    )
 	plot!(
-        real.([z.data[ii, ii] for ii in 2:(num_z-1)]), 
-        real.([U.data[ii, ii] for ii in 2:(num_z-1)]), 
-        xlabel = L"k_{lat}z", ylabel = L"U (E_r)", 
-        label="Potential to solve"
-        )
-	
-	plot!(
-        title="Depth = "*string(round(U_0/Er, digits=2))*" Er", 
+        title="Depth = "*string(round(U_0, digits=2))*" Er", 
 	legend=:best
     )
     return fig
