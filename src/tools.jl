@@ -5,22 +5,32 @@ function get_mean_position(ψ, zz)
 	return real(ψ'*(zz.*ψ))
 end
 
-function get_rabi_freq(ψ1, ψ2)
-    """Calculate Rabi frequency with normalized wavefunctions"""
-	return ψ1'*(exp.(im*zz*kclock/k813).*ψ2)
-end
-
 function get_U(z, ρ, U0)
     """Give potential in a units of Er"""
     (-ustrip(U0)*(cos(z))^2*exp(-2*ρ^2/w0^2) + ustrip(m87Sr*g/k813)*z)/ustrip(Er)
 end
 
-function find_center_index(soln, zz)
+function find_center_index(soln, zz, siteindx)
     """Find x=0 eigen state's index"""
 	zexpt = [get_mean_position(soln.vectors[:,ii], zz) for ii in range(1, size(soln.vectors)[1])]
-	centered_indices = findall(abs.(zexpt) .< 0.05)
+	centered_indices = findall(abs.(zexpt .- siteindx*π) .< 0.5)
 	return centered_indices
 end
+
+function draw_wfn(df, data_indx, siteindx)
+    H_eigen = df[data_indx, "solution"]
+    zz = df[data_indx, "zz"]
+    center_indx = find_center_index(H_eigen, zz, siteindx)
+    ψ_nz0 = real.(H_eigen.vectors[:, center_indx[1]])
+    ψ_nz1 = real.(H_eigen.vectors[:, center_indx[2]])
+    fig = plot(zz/π, real.(ψ_nz0), dpi=300, 
+        title=df[data_indx, "depth"], 
+        xlim=[-5, 5]
+    )
+    plot!(zz/π, real.(ψ_nz1))
+    return fig
+end
+
 
 function plot_eigen_spectrum(df, ii)
     F = df[ii, "solution"]
@@ -44,4 +54,26 @@ end
 
 function get_sine_sq_exp(ψ, zz)
     return ψ'*((sin.(zz).^2).*ψ)
+end
+
+
+function get_rabi_frequency(df, data_indx)
+    """Get list of rabi frequency. nz=0 WS0, 1, 2, 3 and nz=1 WS0, 1, 2, 3"""
+    H_eigen = df[data_indx, "solution"]
+    zz = df[data_indx, "zz"]
+
+    rabi_freqs = zeros(Complex, 8)
+    ψ_nz0 = H_eigen.vectors[:, find_center_index(H_eigen, zz, 0)[1]]
+    for ii in range(1, 4)
+        ψ_nz0_ws = H_eigen.vectors[:, find_center_index(H_eigen, zz, ii-1)[1]]
+        rabi_freqs[ii] = ψ_nz0' *(exp.(im*zz*kclock/k813).*ψ_nz0_ws)
+    end
+    
+    ψ_nz1 = H_eigen.vectors[:,find_center_index(H_eigen, zz, 0)[2]]
+    for ii in range(1, 4)
+        ψ_nz1_ws = H_eigen.vectors[:, find_center_index(H_eigen, zz, ii-1)[2]]
+        rabi_freqs[ii+4] = ψ_nz1' *(exp.(im*zz*kclock/k813).*ψ_nz1_ws)
+    end
+
+    return rabi_freqs
 end
