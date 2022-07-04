@@ -1,5 +1,7 @@
 using PhysicalConstants, PhysicalConstants.CODATA2018, Unitful, UnitfulRecipes, LaTeXStrings, Plots, LinearAlgebra, QuantumOptics, OhMyREPL
 
+gr(dpi=300)
+
 c = SpeedOfLightInVacuum
 h = PlanckConstant
 kB = BoltzmannConstant
@@ -25,3 +27,5 @@ fclock = 429_228_004_229_873.0u"Hz"
 kclock = 2π/λclock
 Er = uconvert(u"J", ħ^2 * klat^2 / 2 / m87Sr)
 w0 = 260e-6u"m"
+
+print("initialize.jl imported \n")

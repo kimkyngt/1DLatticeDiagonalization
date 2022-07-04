@@ -1,5 +1,5 @@
 # Tools for diagonalization
-using Plots
+using Plots, JSON
 function get_mean_position(ψ, zz)
     """get quantum averaged position"""
 	return real(ψ'*(zz.*ψ))
@@ -23,16 +23,24 @@ function draw_wfn(df, data_indx, siteindx)
     center_indx = find_center_index(H_eigen, zz, siteindx)
     ψ_nz0 = real.(H_eigen.vectors[:, center_indx[1]])
     ψ_nz1 = real.(H_eigen.vectors[:, center_indx[2]])
-    fig = plot(zz/π, real.(ψ_nz0), dpi=300, 
+    fig1 = plot(zz/π, real.(ψ_nz0), dpi=300, 
         title=df[data_indx, "depth"], 
-        xlim=[-5, 5]
+        xlim=[-5, 5], 
+        xlabel="Lattice site"
     )
-    plot!(zz/π, real.(ψ_nz1))
+    plot!(zz/π, circshift(real.(ψ_nz0), round(π/(zz[2] - zz[1]))), dpi=300, 
+        title=df[data_indx, "depth"], 
+        xlim=[-5, 5], 
+        xlabel="Lattice site"
+    )
+    fig2 = plot(zz/π, real.(ψ_nz1), xlim=[-10, 10], xlabel="Lattice site")
+    fig = plot(fig1, fig2, layout=(2, 1))
     return fig
 end
 
 
 function plot_eigen_spectrum(df, ii)
+    """Plot eigenvalue specturm to check the calculation"""
     F = df[ii, "solution"]
     zz = df[ii, "zz"]
     maxbandnum = 3
@@ -61,19 +69,58 @@ function get_rabi_frequency(df, data_indx)
     """Get list of rabi frequency. nz=0 WS0, 1, 2, 3 and nz=1 WS0, 1, 2, 3"""
     H_eigen = df[data_indx, "solution"]
     zz = df[data_indx, "zz"]
+    dz = zz[2] - zz[1]
+    center_indx = find_center_index(H_eigen, zz, 0)
 
     rabi_freqs = zeros(Complex, 8)
-    ψ_nz0 = H_eigen.vectors[:, find_center_index(H_eigen, zz, 0)[1]]
+
+    ψ_nz0 = H_eigen.vectors[:, center_indx[1]]
+    expikr_ψ = exp.(im*zz*(kclock/k813)) .* ψ_nz0
     for ii in range(1, 4)
-        ψ_nz0_ws = H_eigen.vectors[:, find_center_index(H_eigen, zz, ii-1)[1]]
-        rabi_freqs[ii] = ψ_nz0' *(exp.(im*zz*kclock/k813).*ψ_nz0_ws)
+        # shift centered wavefunction to get different order ws states.
+        ψ_nz0_ws = circshift(ψ_nz0, (ii-1)*round(π/dz))
+        rabi_freqs[ii] = ψ_nz0_ws' * expikr_ψ
     end
     
-    ψ_nz1 = H_eigen.vectors[:,find_center_index(H_eigen, zz, 0)[2]]
+    ψ_nz1 = H_eigen.vectors[:,center_indx[2]]
+    expikr_ψ = exp.(im*zz*(kclock/k813)) .* ψ_nz1
     for ii in range(1, 4)
-        ψ_nz1_ws = H_eigen.vectors[:, find_center_index(H_eigen, zz, ii-1)[2]]
-        rabi_freqs[ii+4] = ψ_nz1' *(exp.(im*zz*kclock/k813).*ψ_nz1_ws)
+        ψ_nz1_ws = circshift(ψ_nz1, (ii-1)*round(π/dz))
+        rabi_freqs[ii+4] = ψ_nz1_ws' * expikr_ψ
     end
 
     return rabi_freqs
 end
+
+
+function overlay_data!(filter_string="nz1")
+    data = JSON.parse(JSON.parsefile(datadir("exp_pro", "rabi_freqs_20220625.json")))
+    Ω0 = maximum(data["nz0 ws0"]["rabi frequency"])
+
+    for key in keys(data)
+        if key[1:3] == filter_string
+            plot!(data[key]["depth Erec"],abs2.(data[key]["rabi frequency"]/Ω0), marker=:circle, xscale=:log10, yscale=:log10, label=key, lw=0)
+        end
+    end
+
+    data = JSON.parse(JSON.parsefile(datadir("exp_pro", "rabi_freqs_20220626.json")))
+    for key in keys(data)
+        if key[1:3] == filter_string
+            plot!(data[key]["depth Erec"],abs2.(data[key]["rabi frequency"]/Ω0), marker=:circle, xscale=:log10, yscale=:log10, label=key, lw=0)
+        end
+    end
+
+end
+
+function get_Tr(u, state)
+    """get measured, fitted radial temperature, returns in K"""
+    if state == "nz0"
+        Tr = 3.18e-8*u^0.65*1u"K"
+    elseif state == "nz1"
+        Tr = 1.53e-8*u^0.65*1u"K"
+    end
+    
+    return Tr
+end
+
+print("tools.jl imported \n")
