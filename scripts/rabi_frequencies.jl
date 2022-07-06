@@ -18,35 +18,7 @@ for ii in range(1, size(df)[1])
     rabi_freqs[:, ii] = get_rabi_frequency(df, ii)
 end
 
-wsave(datadir("sims", "rabi_frequencies.jld2"), Dict([("depth", depths), ("rabi_freqs", rabi_freqs)]))
-
-fig1 = plot()
-for ii in range(1, 4)
-    plot!(depths, abs2.(rabi_freqs[ii, :]) , 
-        seriestype=:line, 
-        yscale=:log10, 
-        xscale=:log10,
-        xlims=(5, 60),
-        ylims=(1e-4, 2),    
-        xticks=(3:10:60, 3:10:60),
-        color="black",
-        title="n_z=0",
-    )
-end
-fig2 = plot()
-for ii in range(5,8)
-    plot!(depths, abs2.(rabi_freqs[ii, :]) , 
-        seriestype=:line, 
-        yscale=:log10, 
-        xscale=:log10,
-        xlims=(5, 60),
-        ylims=(1e-4, 2),    
-        xticks=([8, 9, 10, 13,20, 30], [8, 9, 10, 13, 20, 30]),
-        color="black", 
-        title="n_z = 1"
-    )
-end
-plot(fig1, fig2, layout=(2, 1))
+# Hand fittings
 
 # nz1
 function fit_to_data()
@@ -90,3 +62,11 @@ function fit_to_data()
     return fig
 end
 fig = fit_to_data()
+
+
+# Save data
+tosave = Dict([("depth", depths), ("rabi_freqs", abs.(rabi_freqs))])
+wsave(datadir("rabi_frequencies.jld2"), tosave)
+open(datadir("rabi_frequencies.json"),"w") do f
+    JSON.print(f,tosave) 
+end

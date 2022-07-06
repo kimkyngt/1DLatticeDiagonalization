@@ -16,7 +16,7 @@ function find_center_index(soln, zz, siteindx)
 	centered_indices = findall(abs.(zexpt .- siteindx*π) .< 0.5)
 	return centered_indices
 end
-
+``
 function draw_wfn(df, data_indx, siteindx)
     H_eigen = df[data_indx, "solution"]
     zz = df[data_indx, "zz"]
