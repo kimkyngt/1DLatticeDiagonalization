@@ -7,7 +7,7 @@ end
 
 function get_U(z, ρ, U0)
     """Give potential in a units of Er"""
-    (-ustrip(U0)*(cos(z))^2*exp(-2*ρ^2/w0^2) + ustrip(m87Sr*g/k813)*z)/ustrip(Er)
+    (-ustrip(U0)*(cos(z))^2*exp(-2*ρ^2/w0^2) + 867/868.23*ustrip(m87Sr*g/k813)*z)/ustrip(Er)
 end
 
 function find_center_index(soln, zz, siteindx)

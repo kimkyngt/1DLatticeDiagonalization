@@ -47,16 +47,17 @@ end
 
 # Depth scan
 
-depths = [13.25, 9.75, 10.25]
+depths =  [12.5:0.5:30;31:5:300]
+print(length(depths))
 for depth in depths
     sim_params = Dict{String, Any}(
-        "numsites" => 100, 
-        "numz" => 2^12,     
+        "numsites" => 41, 
+        "numz" => 2000,     
         "depth" => depth,
         "radius" => 0,
     )
     soln = diagonalize_lattice(sim_params)
-    @tagsave(datadir("sims", savename(sim_params, "jld2")), soln)
+    @tagsave(datadir("sims", "gcorrect", savename(sim_params, "jld2")), soln)
     print(string(depth)*" Er done...")
 end
 print("Finished")
