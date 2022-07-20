@@ -1,6 +1,6 @@
 using DrWatson, Interpolations, LsqFit
 
-include(srcdir("intialize.jl"))
+include(srcdir("initialize.jl"))
 include(srcdir("tools.jl"))
 
 #load and sort

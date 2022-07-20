@@ -1,6 +1,6 @@
 using DrWatson, DataFrames
 
-include(srcdir("intialize.jl"))
+include(srcdir("initialize.jl"))
 include(srcdir("tools.jl"))
 
 if ~(@isdefined df)

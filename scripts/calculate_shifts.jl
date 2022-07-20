@@ -1,6 +1,6 @@
-using DataFrames
+using DataFrames, DrWatson
 
-include(srcdir("intialize.jl"))
+include(srcdir("initialize.jl"))
 include(srcdir("tools.jl"))
 
 df = collect_results(datadir("sims"))
@@ -18,7 +18,7 @@ for ii in range(1, data_num)
     zz = df[ii, "zz"]
     depths[ii] = df[ii, "depth"]
 
-    center_indx = find_center_index(H_eigen, zz)
+    center_indx = find_center_index(H_eigen, zz, 1)
     ψ_nz0 = real.(H_eigen.vectors[:, center_indx[1]])
     ψ_nz1 = real.(H_eigen.vectors[:, center_indx[2]])
 

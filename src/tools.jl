@@ -17,24 +17,35 @@ function find_center_index(soln, zz, siteindx)
 	return centered_indices
 end
 ``
-function draw_wfn(df, data_indx, siteindx)
+function draw_wfn(df, data_indx, siteindx;kwargs...)
     H_eigen = df[data_indx, "solution"]
     zz = df[data_indx, "zz"]
     center_indx = find_center_index(H_eigen, zz, siteindx)
     ψ_nz0 = real.(H_eigen.vectors[:, center_indx[1]])
     ψ_nz1 = real.(H_eigen.vectors[:, center_indx[2]])
-    fig1 = plot(zz/π, real.(ψ_nz0), dpi=300, 
+
+    fig = plot(zz/π, 0.15*cos.(kclock/k813*zz), label="clock laser", color=palette(:tab10)[4], lw=1, alpha=0.5)
+    
+    plot!(
+        zz/π, real.(ψ_nz0),
+        fill=0, 
+        xlim=[-10, 10], 
+        xlabel="Lattice site", 
+        label="nz = 1", 
+        color=palette(:tab10)[1], 
+        alpha=0.7,
+        )
+    plot!(zz/π, real.(ψ_nz1),
+        fill=0,
+        alpha=0.7,
         title=df[data_indx, "depth"], 
         xlim=[-5, 5], 
-        xlabel="Lattice site"
+        xlabel="Lattice site",
+        label="nz = 0", 
+        color=palette(:tab10)[2], 
+        ;kwargs...
     )
-    plot!(zz/π, circshift(real.(ψ_nz0), round(π/(zz[2] - zz[1]))), dpi=300, 
-        title=df[data_indx, "depth"], 
-        xlim=[-5, 5], 
-        xlabel="Lattice site"
-    )
-    fig2 = plot(zz/π, real.(ψ_nz1), xlim=[-10, 10], xlabel="Lattice site")
-    fig = plot(fig1, fig2, layout=(2, 1))
+    
     return fig
 end
 
@@ -62,6 +73,10 @@ end
 
 function get_sine_sq_exp(ψ, zz)
     return ψ'*((sin.(zz).^2).*ψ)
+end
+
+function get_sine_sq_exp_density(ψ, zz)
+    return abs2.(ψ)'*(sin.(zz).^2)
 end
 
 

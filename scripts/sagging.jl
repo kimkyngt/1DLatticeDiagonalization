@@ -1,7 +1,7 @@
 
 using DrWatson
 print(projectname()*" activated \n")
-include(srcdir("intialize.jl"))
+include(srcdir("initialize.jl"))
 include(srcdir("tools.jl"))
 
 

@@ -1,5 +1,5 @@
 using DrWatson
-include(srcdir("intialize.jl"))
+include(srcdir("initialize.jl"))
 include(srcdir("tools.jl"))
 
 plotly()
