@@ -13,7 +13,7 @@ end
 function find_center_index(soln, zz, siteindx)
     """Find x=0 eigen state's index"""
 	zexpt = [get_mean_position(soln.vectors[:,ii], zz) for ii in range(1, size(soln.vectors)[1])]
-	centered_indices = findall(abs.(zexpt .- siteindx*π) .< 0.5)
+	centered_indices = findall(abs.(zexpt) .< 0.1)
 	return centered_indices
 end
 
@@ -136,6 +136,20 @@ function get_Tr(u, state)
     end
     
     return Tr
+end
+
+function get_axial_eigen_energy(df, data_indx; num_state=5)
+    """Axial eigen energy returns in Er"""
+    H_eigen = df[data_indx, "solution"]
+    zz = df[data_indx, "zz"]
+    depth = df[data_indx, "depth"]
+    center_indx = find_center_index(H_eigen, zz, 0)
+
+    axial_energy = zeros(num_state)
+    for ii in range(1, num_state)
+        axial_energy[ii] = real(H_eigen.values[center_indx[ii]])
+    end
+    return axial_energy, depth
 end
 
 print("tools.jl imported \n")

@@ -16,7 +16,7 @@ function draw_wfn_script(df, data_indx, siteindx;kwargs...)
     H_eigen = df[data_indx, "solution"]
     zz = df[data_indx, "zz"]
     depth = df[data_indx, "depth"]
-    mg = uconvert(NoUnits, m87Sr*g*λ813/2/Er/π)
+    mg = uconvert(NoUnits, m87Sr*g_n*λ813/2/Er/π)
     center_indx = find_center_index(H_eigen, zz, siteindx)
     ψ_nz0 = real.(H_eigen.vectors[:, center_indx[1]])
     E0 = real(H_eigen.values[center_indx[1]])
@@ -50,5 +50,7 @@ function draw_wfn_script(df, data_indx, siteindx;kwargs...)
     return fig
 end
 
-draw_wfn_script(df, findfirst(df[:, "depth"] .== 15), 0, legend=:false, ylims=(-18, 2), size=((3+3/8)*96*2/3, (3+3/8)*96*3/4), grid=:false, axis=:off, ticks=:false,ylabel="Energy", background_color = RGBA(1,1,1,0), font="helvetica")
-Plots.pdf(plotsdir("wfn_in_lattice.pdf"))
+draw_wfn_script(df, findfirst(df[:, "depth"] .== 15), 0, legend=:false, 
+# ylims=(-18, 2), 
+size=((3+3/8)*96*2/3, (3+3/8)*96*3/4), grid=:false, axis=:off, ticks=:false,ylabel="Energy", font="helvetica")
+# Plots.pdf(plotsdir("wfn_in_lattice.pdf"))
