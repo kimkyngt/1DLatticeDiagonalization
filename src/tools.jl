@@ -7,7 +7,7 @@ end
 
 function get_U(z, ρ, U0)
     """Give potential in a units of Er"""
-    (-ustrip(U0)*(cos(z))^2*exp(-2*ρ^2/w0^2) + 867/868.23*ustrip(m87Sr*g/k813)*z)/ustrip(Er)
+    (-ustrip(U0)*(cos(z))^2*exp(-2*ρ^2/w0^2) + 867/868.23*ustrip(m87Sr*g_n/k813)*z)/ustrip(Er)
 end
 
 function find_center_index(soln, zz, siteindx)
@@ -57,17 +57,28 @@ function plot_eigen_spectrum(df, ii)
     maxbandnum = 3
     numsites = df[ii, "numsites"]
     U_0 = df[ii, "depth"]
-
-	fig = plot(
-        [get_mean_position(real.(F.vectors[:,ii]), zz) for ii in range(1, numsites*maxbandnum)],
+	fig =plot(
+        zz/π, [get_U(z, 0u"m", U_0*Er) for z in zz], 
+        label=L"U(z, r=0)",
+        color=:black,
+        alpha=0.7,
+        size=(600, 300)
+    )
+    plot!(
+        [get_mean_position(real.(F.vectors[:,ii]), zz) for ii in range(1, numsites*maxbandnum)]/π,
         real.(F.values[1:numsites*maxbandnum]),
-		marker=:hline,markerstrokewidth=3, 
-        markersize=6,lw=0, label=L"\langle z \rangle"*" vs Eigen energy",
+		marker=:hline, markerstrokewidth=3, 
+        markersize=6,
+        st = :scatter,
+        color=1,
+        label=L"E_n(\langle z \rangle)"
     )
-	plot!(
-        title="Depth = "*string(round(U_0, digits=2))*" Er", 
-	legend=:best
-    )
+    plot!(
+        legend=:bottomright,
+        xlabel="Lattice site",
+        ylabel="Energy (Eᵣ)",
+        grid=:true
+        )
     return fig
 end
 

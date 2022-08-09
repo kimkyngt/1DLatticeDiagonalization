@@ -67,8 +67,10 @@ annotate!(0.08, 0.0.+ B, Plots.text("Carrier", 6, "helvetica", color=:black, rot
 
 plot!([-0, 1], [-0.3, -0.3+offset+B].+ B, arrow=true, color=:black, lw=1)
 annotate!(0.7, 0.05.+ B, Plots.text("WS+1", 6, "helveitica",color=:black, rotation=56))
+annotate!(-1.3, 0.05.+ B, Plots.text(L"\lambda_{\mathrm{lat}}/2", 6,color=:black, rotation=0))
 
 # fine tune
-plot!(axis=false, grid=false, ticks=false, xlims=(-2.5, 2), size = ((3+3/8)*96, (3+3/8)*96*2.3/4), background_color = RGBA(1,1,1,0))
+plot!(axis=false, legend=false, grid=false, ticks=false, xlims=(-2.5, 2), size = ((3+3/8)*96, (3+3/8)*96*2.3/4), background_color = RGBA(1,1,1,0))
 
 Plots.pdf(plotsdir("lattice_diagram.pdf"))
+plot!()

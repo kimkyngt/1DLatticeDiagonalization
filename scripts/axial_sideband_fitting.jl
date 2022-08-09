@@ -8,7 +8,6 @@ data = JSON.parse(json_string)
 detuning = data["nz0"]["detuning"]
 rho_ee = data["nz0"]["exc_frac"]
 p = sortperm(detuning)
-plot(detuning[p]*1e-3, rho_ee[p])
 
 
 # Calculate Rabi frequency ratios 
@@ -24,17 +23,22 @@ function get_rabi_freq_BSB(df, data_indx)
     zz = df[data_indx, "zz"]
     dz = zz[2] - zz[1]
     center_indx = find_center_index(H_eigen, zz, 0)
-    rabi_freqs = zeros(Complex, 4)
+    rabi_freqs = zeros(Complex, 6)
 
     ψ_nz0 = H_eigen.vectors[:, center_indx[1]]
     ψ_nz1 = H_eigen.vectors[:,center_indx[2]]
     expikr_ψ = exp.(im*zz*(kclock/k813)) .* ψ_nz0
-    for ii in range(1, 4)
+    for ii in range(1, length(rabi_freqs))
         ψ_nz1_ws = circshift(ψ_nz1, (ii-1)*round(π/dz))
-        rabi_freqs[ii+4] = ψ_nz1_ws' * expikr_ψ
+        rabi_freqs[ii] = ψ_nz1_ws' * expikr_ψ
     end
 
-    return rabi_freqs
+    # Get energy gap
+    Egap = H_eigen.values[center_indx[2]] - H_eigen.values[center_indx[1]]
+    return rabi_freqs, abs(Egap)
 end
 
-get_rabi_freq_BSB(df, findfirst(df[:, "depth"] .== 10))
+Omega, Egap = get_rabi_freq_BSB(df, findfirst(df[:, "depth"] .== 20))
+
+# plot(detuning[p]*1e-3, rho_ee[p])
+plot!([Egap*ustrip(Er/h)*1e-3 + 867.69*(ii-1)*1e-3 for ii in range(1, length(Omega))], [abs(Omega[ii]) for ii in range(1, length(Omega))], st=:stem)

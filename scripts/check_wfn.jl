@@ -10,7 +10,6 @@ else
 end
 
 
-# plot_eigen_spectrum(df,findfirst(df[:, "depth"] .== 30))
 
 function draw_wfn_script(df, data_indx, siteindx;kwargs...)
     H_eigen = df[data_indx, "solution"]
@@ -54,3 +53,6 @@ draw_wfn_script(df, findfirst(df[:, "depth"] .== 15), 0, legend=:false,
 # ylims=(-18, 2), 
 size=((3+3/8)*96*2/3, (3+3/8)*96*3/4), grid=:false, axis=:off, ticks=:false,ylabel="Energy", font="helvetica")
 # Plots.pdf(plotsdir("wfn_in_lattice.pdf"))
+
+plot_eigen_spectrum(df,findfirst(df[:, "depth"] .== 15))
+Plots.pdf(plotsdir("Eigen_energy.pdf"))
