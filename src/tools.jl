@@ -75,7 +75,7 @@ function plot_eigen_spectrum(df, ii)
     )
     plot!(
         legend=:bottomright,
-        xlabel="Lattice site",
+        xlabel="Lattice site, "*L"2z / \lambda_L",
         ylabel="Energy (Eᵣ)",
         grid=:true
         )
@@ -84,6 +84,10 @@ end
 
 function get_sine_sq_exp(ψ, zz)
     return ψ'*((sin.(zz).^2).*ψ)
+end
+
+function get_cos_sq_exp(ψ, zz)
+    return ψ'*((cos.(zz).^2).*ψ)
 end
 
 function get_sine_sq_exp_density(ψ, zz)

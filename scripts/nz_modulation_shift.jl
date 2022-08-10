@@ -70,4 +70,4 @@ fig2 = plot(depths, shifts/ustrip(fclock) + sqrt.(depths)*alpha_qm/ustrip(fclock
     legend=true
     ) 
 figtot = plot(fig, fig2, layout=(1, 2), size=(700, 300), link=:x,)
-Plots.pdf(figtot, plotsdir("nz_modulation_lock_simulation.pdf"))
+# Plots.pdf(figtot, plotsdir("nz_modulation_lock_simulation.pdf"))
