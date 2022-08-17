@@ -31,7 +31,7 @@ function get_normalziation(U_0, T_r)
 end
 
 # Parameters
-U_0 = 10.1
+U_0 = 6.1
 T_r = 45*√(U_0)*u"nK"
 w_0 = 260e-6 # cavity waist
 rmax = 500e-6 # in 
@@ -57,8 +57,8 @@ println(fit.param)
 println(get_rabi_freq(U_0))
 plot(fig_density, fig_rabi, size= (600, 300), bottom_margin = 10Plots.px, ylim=(0, 1.1))
 
-cond=(U_0 = U_0, Tr = ustrip(T_r))
-Plots.pdf(plotsdir(savename("Rabi_frequency_exctraction_sims", cond, "pdf")))
+# cond=(U_0 = U_0, Tr = ustrip(T_r))
+# Plots.pdf(plotsdir(savename("Rabi_frequency_exctraction_sims", cond, "pdf")))
 # Check normalization
 # integral, err = quadgk(x -> get_rho(x, U_0, T_r), 0, 1e-2, )
 

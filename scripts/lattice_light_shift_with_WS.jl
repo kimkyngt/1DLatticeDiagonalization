@@ -9,12 +9,6 @@ else
     print("df exist, skip loading \n")
 end
 
-# Light shift coefficients
-alpha_qm = -0.00124
-dalpha_E1dnu = 1.855e-11
-delta_E1 = -0
-alpha_E1 = dalpha_E1dnu*delta_E1
-
 # Preallocations
 Ndata = size(df)[1]
 depths = zeros(Ndata)
@@ -35,9 +29,17 @@ sinkz_sq = zeros(Ndata)
 end
 indx = sortperm(depths)
 
+
+# Light shift coefficients
+alpha_qm = -0.00124
+dalpha_E1dnu = 1.855e-11
+delta_E1 = -00e6
+alpha_E1 = dalpha_E1dnu*delta_E1
+
 # Plot harmonic ligt shift curves
 dnu_harmonic = (alpha_E1 - alpha_qm)*0.5*sqrt.(depths) .- alpha_E1*depths
 dnu_WS = -alpha_E1*coskz_sq.*depths - alpha_qm*sinkz_sq.*depths
+
 plt = plot(depths[indx], dnu_harmonic[indx]/ustrip(fclock), st=:line, label="Harmonic")
 plot!(depths[indx], dnu_WS[indx]/ustrip(fclock), st=:line,ls=:dash,  label="WS")
 plot!(
@@ -47,4 +49,9 @@ plot!(
     ylabel=L"\Delta \nu_{LS}",
     legend=:true
     )
+
+plt2 = plot(depths[indx], (dnu_harmonic[indx] - dnu_WS[indx])/ustrip(fclock), label="Harmonic - WS", ylims=(-1e-19, 1e-19), legend=:true, yticks=[-1, 0, 1]*1e-19, xlabel="Lattice depth (Eᵣ)", xscale=:log10)
+
+fig = plot(plt, plt2, size=(700, 300), margin=10Plots.px)
 Plots.pdf(plt, plotsdir("Lightshift_harmonic_WS_comparison.pdf"))
+
