@@ -28,7 +28,7 @@ Tpx = transform(compbp, compbx)
 Hkin = Pr^2/2 + Pz^2/2 # kinetic energy in momentum space
 @time Hkin_FFT = LazyProduct(Txp, Hkin, Tpx)# lazy tensor for the split-step method
 Hkin_FFT = dense(Hkin_FFT)
-U = 3*r^2 + 1.5*z^2 + 5*r^2*z^2
+U = 0.1*r^2 + 0.01*z^2 + 100*r^2*z^2 + 10*z^4
 
 H = Hkin_FFT + U
 
