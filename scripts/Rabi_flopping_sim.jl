@@ -12,16 +12,15 @@ function get_rho(r, U_0, T_r)
     """r is number in meter, U_0 is number in Er, T_r is u"K" """
     # ω̄ = 2*π*2.44u"Hz"*(2*√(U_0) - 1/2) # for the ground state
     A = -(U_0*exp(-2*(r^2/w_0^2)) - sqrt(U_0)*exp(-r^2/w_0^2) + 1/4)*uconvert(NoUnits, Er/k_B/T_r)
-    rho = exp(-A)
-    return rho
+    return exp(-A)
 end
 
 function integrand(U_0, T_r, r, t)
-    get_rho(r, U_0, T_r)*sin(get_rabi_freq(U_0*exp(-2*r^2/w_0^2))*t/2)^2 * r
+    get_rho(r, U_0, T_r)*sin(get_rabi_freq(U_0*exp(-2*r^2/w_0^2))*t/2)^2
 end
 
 function get_pe_avg(U_0, T_r, t)
-    pe, err = quadgk(r -> integrand(U_0, T_r, r, t), 0, rmax)
+    pe, err = quadgk(r -> r*integrand(U_0, T_r, r, t), 0, rmax)
     return pe
 end
 
@@ -39,8 +38,8 @@ function get_Tr(U_0)
 end
 
 # Parameters
-U_0 = 6
-T_r = get_Tr(U_0) *1.2
+U_0 = 4
+T_r = get_Tr(U_0) *1.5
 w_0 = 260e-6 # cavity waist
 rmax = 300e-6 # in 
 
@@ -63,10 +62,10 @@ annotate!(2, 1.05, L"$Ω/Ω_{fit} = $"*string(round(get_rabi_freq(U_0)/fit.param
 
 println(fit.param)
 println(get_rabi_freq(U_0))
-plot(fig_density, fig_rabi, size= (600, 300), bottom_margin = 10Plots.px, ylim=(0, 1.1))
+fig = plot(fig_density, fig_rabi, size= (600, 300), bottom_margin = 10Plots.px, ylim=(0, 1.1))
 
-# cond=(U_0 = U_0, Tr = ustrip(T_r))
-# Plots.pdf(plotsdir(savename("Rabi_frequency_exctraction_sims", cond, "pdf")))
+cond=(U_0 = U_0, Tr = ustrip(u"nK", T_r))
+Plots.pdf(fig, plotsdir("rabi_flopping_sim", savename(cond, "pdf")))
 # Check normalization
 # integral, err = quadgk(x -> get_rho(x, U_0, T_r), 0, 1e-2, )
-
+fig

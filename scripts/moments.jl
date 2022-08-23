@@ -17,8 +17,8 @@ function get_Tr(U_0)
 end
 
 # Parameters
-U_0 = 30
-T_r = get_Tr(U_0*1.1)
+U_0 = 5
+T_r = get_Tr(U_0*1.1)*2
 w_0 = 260e-6 # cavity waist
 rmax = 300e-6 # in 
 
@@ -34,11 +34,11 @@ fig = scatter(powers/2,  expansions, legend=false, xticks=powers/2, xlabel=L"k",
 title=string(U_0)*" Er, "*string(round(u"nK", T_r)),
 yscale=:log10,
 # yticks=[1, 0.1, 0.01, 0.001, 0.0001],
-yminorticks=10,
+# yminorticks=10,
 grid=true,
 )
 
-d=(U_0=U_0, T_r=T_r, rmax=rmax)
+d=(U_0=U_0, T_r=ustrip(u"nK", T_r), rmax=rmax)
 Plots.pdf(fig, plotsdir("moments", savename("Moments", d, "pdf")))
 
 fig

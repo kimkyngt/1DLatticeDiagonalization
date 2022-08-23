@@ -167,4 +167,8 @@ function get_axial_eigen_energy(df, data_indx; num_state=5)
     return axial_energy, depth
 end
 
+function get_periodic_zpower(zz, power)
+    (zz .- pi*floor.(zz/pi .+ 1/2) ).^power
+end
+
 print("tools.jl imported \n")
