@@ -10,6 +10,11 @@ function get_U(z, ρ, U0)
     (-ustrip(U0)*(cos(z))^2*exp(-2*ρ^2/w0^2) + 867/868.23*ustrip(m87Sr*g_n/k813)*z)/ustrip(Er)
 end
 
+function get_Unz(r, U0, w_0, nz)
+    """Give potential in a units of Er"""
+    return -U0*(exp.(-r.^2/w_0.^2) .- sqrt(1/U0)*(nz+1/2)).^2 .+ (nz+1/2)^2  .- 0.5*(nz^2+nz+1/2) 
+end
+
 function find_center_index(soln, zz, siteindx)
     """Find x=0 eigen state's index"""
 	zexpt = [get_mean_position(soln.vectors[:,ii], zz) for ii in range(1, size(soln.vectors)[1])]
