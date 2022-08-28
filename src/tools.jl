@@ -1,5 +1,5 @@
 # Tools for diagonalization
-using Plots, JSON
+using Plots, JSON, LaTeXStrings
 function get_mean_position(ψ, zz)
     """get quantum averaged position"""
 	return real(ψ'*(zz.*ψ))
@@ -7,7 +7,7 @@ end
 
 function get_U(z, ρ, U0)
     """Give potential in a units of Er"""
-    (-ustrip(U0)*(cos(z))^2*exp(-2*ρ^2/w0^2) + 867/868.23*ustrip(m87Sr*g_n/k813)*z)/ustrip(Er)
+    (-ustrip(U0)*(cos(z))^2*exp(-2*ρ^2/w0^2) .+ 867/868.23*ustrip(m87Sr*g_n/k813)*z)/ustrip(Er)
 end
 
 function get_Unz(r, U0, w_0, nz)

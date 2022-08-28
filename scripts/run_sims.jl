@@ -47,7 +47,7 @@ end
 
 # Depth scan
 
-depths =  [12.5:0.5:30;31:5:300]
+depths =  range(9, 10, length=10)
 print(length(depths))
 for depth in depths
     sim_params = Dict{String, Any}(

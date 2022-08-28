@@ -38,7 +38,7 @@ function get_rabi_freq_BSB(df, data_indx)
     return rabi_freqs, abs(Egap)
 end
 
-Omega, Egap = get_rabi_freq_BSB(df, findfirst(df[:, "depth"] .== 20))
-
-# plot(detuning[p]*1e-3, rho_ee[p])
+Omega, Egap = get_rabi_freq_BSB(df, findfirst(df[:, "depth"] .== 9))
+plotly()
+plot(detuning[p]*1e-3, rho_ee[p])
 plot!([Egap*ustrip(Er/h)*1e-3 + 867.69*(ii-1)*1e-3 for ii in range(1, length(Omega))], [abs(Omega[ii]) for ii in range(1, length(Omega))], st=:stem)

@@ -1,38 +1,37 @@
-using DrWatson
-print(projectname())
-include(srcdir("initialize.jl"))
+using DrWatson, QuantumOptics, LinearAlgebra
 include(srcdir("tools.jl"))
+include(srcdir("initialize.jl"))
 
-	
 # basis generation
-function diagonalize_Unz(sim_params::Dict)
-    @unpack numsites, numz, depth, radius = sim_params
-    zmax = numsites*π/2
-    bz = PositionBasis(-zmax, zmax, numz); zz = samplepoints(bz)
-    bpz = MomentumBasis(bz); ppz = samplepoints(bpz)
+function diagonalize_Unz_Cartesian(sim_params::Dict)
+    @unpack xmax, numx, depth, nz = sim_params
+    bx = PositionBasis(-xmax, xmax, numx) # x in units of 1/k813
+    xx = samplepoints(bx)
+    bpx = MomentumBasis(bx)
 
     # Basic operators
-    z  = position(bz)
-    Pz = momentum(bpz)
+    x  = position(bx)
+    Px = momentum(bpx)
 
     # transformation operators
-    Tzpz = transform(bz, bpz)
-    Tpzz = transform(bpz, bz)
+    Txpx = transform(bx, bpx)
+    Tpxx = transform(bpx, bx)
 
     # Hamiltonian construction
         # Kinetic part
-    Hkin = Pz^2
-    Hkin_FFT = LazyProduct(Tzpz, Hkin, Tpzz)
+    Hkin = Px^2
+    Hkin_FFT = LazyProduct(Txpx, Hkin, Tpxx)
     Hkin_FFT = dense(Hkin_FFT)
 
     # lattice potential
-    U = z*0
-    U_0 = depth*Er
-        # Hard boundary condition
-    U.data[1, 1] = 1000000
-    U.data[end, end] = 1000000
-    for ii = 2:(numz-1)
-        U.data[ii, ii] = get_U(z.data[ii, ii], radius*1u"m", U_0)
+    U = x*0
+    U_0 = depth
+
+    #     # Hard boundary condition
+    # U.data[1, 1] = 1000000
+    # U.data[end, end] = 1000000
+    for ii = 1:numx
+        U.data[ii, ii] = get_Unz(x.data[ii, ii], U_0, w0*k813, nz) # x in units of w_0
     end
 
     H_tot = dense(LazySum(Hkin_FFT, U))
@@ -40,26 +39,37 @@ function diagonalize_Unz(sim_params::Dict)
 
     output_d = copy(sim_params)
     output_d["solution"] = H_eigen
-    output_d["zz"] = zz
-
+    output_d["xx"] = xx
+    output_d["potential"] = U.data.nzval
     return output_d
 end
 
 # Depth scan
-
-depths =  [12.5:0.5:30;31:5:300]
-print(length(depths))
-for depth in depths
+# depths =  [12.5:0.5:30;31:5:300]
+depth = 12
+# for depth in depths
     sim_params = Dict{String, Any}(
-        "numsites" => 41, 
-        "numz" => 2000,     
+        "xmax" => k813*w0, # in units of 1/k813
+        "numx" => 2000,     
         "depth" => depth,
-        "radius" => 0,
+        "nz" => 0,
     )
-    soln = diagonalize_lattice(sim_params)
-    @tagsave(datadir("sims", "gcorrect", savename(sim_params, "jld2")), soln)
+    soln = diagonalize_Unz_Cartesian(sim_params)
+    # @tagsave(datadir("sims", "gcorrect", savename(sim_params, "jld2")), soln)
     print(string(depth)*" Er done...")
-end
+# end
 print("Finished")
-# firstsim = readdir(datadir("sims"))[1]
-# wload(datadir("sims", firstsim))
+
+
+# Plot results
+plot(soln["xx"][2:end-1]/k813, real.(soln["potential"][2:end-1]),xunit=u"μm", label="U(x)", ylabel="Eᵣ")
+
+indx = 250
+E = real.(soln["solution"].values[indx])
+y = real.(soln["solution"].vectors[:, indx])
+plot!(soln["xx"]/k813, abs(E)/3*y/maximum(y) .+ E, 
+xlim=(-100, 100),
+label="wavefunction",
+)
+hline!([real(soln["solution"].values[1])], label="U(0)")
+hline!([real(soln["solution"].values[1])+1], label="U(0) + 1Er")
