@@ -47,8 +47,8 @@ end
 
 # Depth scan
 
-depths =  range(9, 10, length=10)
-print(length(depths))
+depths =  range(10, 11, length=11)
+print(depths)
 for depth in depths
     sim_params = Dict{String, Any}(
         "numsites" => 41, 
