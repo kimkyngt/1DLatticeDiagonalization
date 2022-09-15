@@ -8,7 +8,7 @@ fclock = 429_228_004_229_873.0u"Hz"
 kclock = 2π/λclock
 Er = uconvert(u"J", ħ^2 * k813^2 / 2 / m87Sr)
 w0 = 260e-6u"m"
-
+g_0 = 9.796u"m/s^2"
 θtilt = acos(867.69/867.75) # tilt angle of the lattice
 
 print("initialize.jl imported \n")

@@ -8,16 +8,14 @@ include(srcdir("tools.jl"))
 # else
 #     print("df exist, skip loading \n")
 # end
-# E_ground = zeros(size(df)[1])
-# E_e = zeros(size(df)[1])
+# E_ground = zeros(size(df)[1], 3) # get
 # depths = zeros(size(df)[1])
 # for ii in range(1, size(df)[1])
 #     E, depth = get_axial_eigen_energy(df, ii)
-#     E_ground[ii] = E[1]
-#     E_e[ii] = E[2]
+#     E_ground[ii, :] = E[1:3]
 #     depths[ii] = depth
 # end
-# wsave(datadir("ground_energy.jld2"), Dict("E"=>E_ground, "E1" => E_e, "depth"=>depths))
+# wsave(datadir("eigen_energy.jld2"), Dict("eigen_energy"=>E_ground, "depth"=>depths))
 
 @time data = wload(datadir("ground_energy.jld2"))
 E_ground = data["E"]

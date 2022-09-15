@@ -70,3 +70,18 @@ wsave(datadir("rabi_frequencies.jld2"), tosave)
 open(datadir("rabi_frequencies.json"),"w") do f
     JSON.print(f,tosave) 
 end
+
+
+# carrier only 
+rabi_carrier = zeros(Complex, 3, size(df)[1])
+
+for ii in range(1, size(df)[1])
+    depths[ii] = df[ii, "depth"]
+    rabi_carrier[:, ii] = get_rabi_carrier_frequency(df, ii)
+end
+
+tosave = Dict([("depth", depths), ("rabi_carrier", abs.(rabi_carrier))])
+wsave(datadir("rabi_carrier.jld2"), tosave)
+open(datadir("rabi_carrier.json"),"w") do f
+    JSON.print(f,tosave) 
+end

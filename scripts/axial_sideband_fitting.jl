@@ -71,10 +71,9 @@ for ii in range(1, length(Omega))
     offset = -867.69*(ii-8)
     yfit[:, ii] = abs.(Omega[ii])*[get_axial_sideband_shape(d - offset, Tr, U_0) for d in delta]
 end
-
 y = sum(yfit, dims=2)
 
-
+# plot and save plot
 fig = plot(detuning[p]*1e-3, rho_ee[p], label="data")
 plot!(delta/1e3, (y/maximum(y))*0.16, 
     label="fit", lw=1.5
@@ -83,12 +82,27 @@ plot!(delta/1e3, yfit*(1/maximum(y))*0.16,
     label="", lw=1, color=:grey
 )
 plot!(
-    xlabel="Lattice depth (Eᵣ)", 
+    xlabel="Clock detuning (kHz)", 
     ylabel="Excitation fraction",
     xlims=(10, 23), ylims=(-0.02, 0.2), 
     margin=4Plots.px
 )
 
-Plots.pdf(plotsdir("axial_sideband", "10Er_fit.pdf"))
+savefig(fig, plotsdir("axial_sideband", "10Er_fit.pdf"))
+fig
 
-
+# save data
+datadict = Dict([
+    ("data", Dict(
+        "detuning"=>detuning[p],
+        "frac"=>rho_ee[p],
+    )),
+    "theory"=>Dict(
+        "detuning"=>delta,
+        "frac"=>yfit*(1/maximum(y))*0.16
+    )
+]
+)
+open(datadir("axial_scan_fit.json"),"w") do f
+    JSON.print(f, datadict)
+end

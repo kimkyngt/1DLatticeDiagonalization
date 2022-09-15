@@ -15,10 +15,15 @@ function get_Unz(r, U0, w_0, nz)
     return -U0*(exp.(-r.^2/w_0.^2) .- sqrt(1/U0)*(nz+1/2)).^2 .+ (nz+1/2)^2  .- 0.5*(nz^2+nz+1/2) 
 end
 
+function get_Unz_sag(r, U0, w_0, nz, θ=θtilt)
+    """Give potential with gravitational sagging in a units of Er"""
+    return -U0*(exp.(-r.^2/w_0.^2) .- sqrt(1/U0)*(nz+1/2)).^2 .+ (nz+1/2)^2  .- 0.5*(nz^2+nz+1/2) .+ ustrip(m87Sr*g_0*sin(θ)/Er)*r
+end
+
 function find_center_index(soln, zz, siteindx)
     """Find x=0 eigen state's index"""
 	zexpt = [get_mean_position(soln.vectors[:,ii], zz) for ii in range(1, size(soln.vectors)[1])]
-	centered_indices = findall(abs.(zexpt) .< 0.1)
+	centered_indices = findall(abs.(zexpt) .< pi/2)
 	return centered_indices
 end
 
@@ -123,6 +128,29 @@ function get_rabi_frequency(df, data_indx)
         ψ_nz1_ws = circshift(ψ_nz1, (ii-1)*round(π/dz))
         rabi_freqs[ii+4] = ψ_nz1_ws' * expikr_ψ
     end
+
+    return rabi_freqs
+end
+
+
+function get_Tr(U_0)
+    if U_0>15
+        return 42*√(U_0)*u"nK"
+    else
+        return (-45.2+14.1*U_0)*u"nK"
+    end
+end
+
+function get_rabi_carrier_frequency(df, data_indx)
+    """Get list of carrier rabi frequencies up to nz=2"""
+    H_eigen = df[data_indx, "solution"]
+    zz = df[data_indx, "zz"]
+    center_indx = find_center_index(H_eigen, zz, 0)
+    function calc_Omega(ψ)
+        ψ' *(exp.(im*zz*(kclock/k813)) .*ψ) /(ψ'*ψ)
+    end
+
+    rabi_freqs = [calc_Omega(H_eigen.vectors[:, center_indx[i]]) for i=[1, 2, 3]]
 
     return rabi_freqs
 end

@@ -37,37 +37,38 @@ else
 end
 
 
-fig = plot(
-    depths, 
-    shifts/ustrip(fclock) ,
-    yticks=[0, 3, 6]*1e-17, 
-    ylim=(-0.5e-17, 6e-17), 
-    dpi=300,
-    lw=2,
-    marker=:circle,
-    ylabel="Differential shift", 
-    xlabel="Lattice depth "*L"\mathrm{(E_r)}",
-    xticks=[0, 30, 50, 100, 200, 300],
-    # xticklabels=["", "", "","","","","",""],
-    # size=(400, 300),
-    label="WS",
-    left_margin = 10Plots.px,
-    right_margin=-10Plots.px
-)
-plot!(depths, -sqrt.(depths)*alpha_qm/ustrip(fclock), lw=2, label=L"\propto\sqrt{u}", legend=:bottomright,)
+# fig = plot(
+#     depths, 
+#     shifts/ustrip(fclock) ,
+#     yticks=[0, 3, 6]*1e-17, 
+#     ylim=(-0.5e-17, 6e-17), 
+#     dpi=300,
+#     lw=2,
+#     marker=:circle,
+#     ylabel="Differential shift", 
+#     xlabel="Lattice depth "*L"\mathrm{(E_r)}",
+#     xticks=[0, 30, 50, 100, 200, 300],
+#     # xticklabels=["", "", "","","","","",""],
+#     # size=(400, 300),
+#     label="WS",
+#     left_margin = 10Plots.px,
+#     right_margin=-10Plots.px
+# )
+# plot!(depths, -sqrt.(depths)*alpha_qm/ustrip(fclock), lw=2, label=L"\propto\sqrt{u}", legend=:bottomright,)
 
-fig2 = plot(depths, shifts/ustrip(fclock) + sqrt.(depths)*alpha_qm/ustrip(fclock), 
-    ylim=(0e-19, 5e-19), 
+fig = plot(depths, -shifts/ustrip(fclock) - sqrt.(depths)*alpha_qm/ustrip(fclock), 
+    ylim=(-5e-19, 0e-19), 
     lw=2, 
-    # ylabel="Differential shift", 
-    yticks=[-2, 0, 2, 4]*1e-19,
-    xticks=[0, 30, 50, 100, 200, 300],
-    xlabel="Lattice depth "*L"\mathrm{(E_r)}",
-    label="Difference",
-    right_margin = 5Plots.px,
-    left_margin=-10Plots.px,
-    bottom_margin=10Plots.px,
-    legend=true
+    ylabel=L"\Delta\nu_{LS}^{vib}(\beta=0) - \Delta\nu_{LS}^{vib, WS}(\beta=0)", 
+    yticks=[-5, -2, 0]*1e-19,
+    # xticks=[0, 30, 50, 100, 200, 300],
+    xlabel="Lattice depth (Eᵣ)",
+    # label="Difference",
+    legend=false, 
+    xminorticks=10, 
+    xscale=:log10, 
+    ls:none
     ) 
-figtot = plot(fig, fig2, layout=(1, 2), size=(700, 300), link=:x,)
-# Plots.pdf(figtot, plotsdir("nz_modulation_lock_simulation.pdf"))
+# figtot = plot(fig, fig2, layout=(1, 2), size=(700, 300), link=:x,)
+Plots.pdf(fig, plotsdir("nz_modulation_lock_simulation.pdf"))
+fig
