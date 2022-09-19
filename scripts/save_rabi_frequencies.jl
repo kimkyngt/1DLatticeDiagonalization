@@ -64,12 +64,12 @@ end
 # fig = fit_to_data()
 
 
-# Save data
-tosave = Dict([("depth", depths), ("rabi_freqs", abs.(rabi_freqs))])
-wsave(datadir("rabi_frequencies.jld2"), tosave)
-open(datadir("rabi_frequencies.json"),"w") do f
-    JSON.print(f,tosave) 
-end
+# # Save data
+# tosave = Dict([("depth", depths), ("rabi_freqs", abs.(rabi_freqs))])
+# wsave(datadir("rabi_frequencies.jld2"), tosave)
+# open(datadir("rabi_frequencies.json"),"w") do f
+#     JSON.print(f,tosave) 
+# end
 
 
 # carrier only 

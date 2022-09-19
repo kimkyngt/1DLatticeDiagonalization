@@ -155,6 +155,26 @@ function get_rabi_carrier_frequency(df, data_indx)
     return rabi_freqs
 end
 
+function get_rho(r::AbstractArray, U_0, T_r, nz=0)
+    """r is number in meter, U_0 is number in Er, T_r is u"K" """
+    # ω̄ = 2*π*2.44u"Hz"*(2*√(U_0) - 1/2) # for the ground state
+    U = get_Unz(r, U_0, w_0, nz)
+    U[U .> 0] .= Inf
+    A = U*uconvert(NoUnits, Er/k_B/T_r)
+    return exp.(-A)
+end
+
+function get_rho(r::Number, U_0, T_r, nz=0)
+    """r is number in meter, U_0 is number in Er, T_r is u"K" """
+    # ω̄ = 2*π*2.44u"Hz"*(2*√(U_0) - 1/2) # for the ground state
+    A = get_Unz(r, U_0, w_0, nz)*uconvert(NoUnits, Er/k_B/T_r)
+    if A < 0
+        rho = exp.(-A)
+    else
+        rho = 1e-5
+    end
+    return rho
+end
 
 function overlay_data!(filter_string="nz1")
     data = JSON.parse(JSON.parsefile(datadir("exp_pro", "rabi_freqs_20220625.json")))
