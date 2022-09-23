@@ -29,29 +29,30 @@ function check_rabi_freqs(;kwargs...)
 end
 
 # Parameters
-U_0 = 13
-T_r = get_Tr(U_0)
+U_0 = 6
+T_r = get_Tr(U_0)*1.2
 w_0 = 260e-6 # cavity waist
 rmax = w_0 # in 
 
 rr = range(-rmax, rmax, length=1000)
 
 fig_rabi = plot(rr*1e6, get_rho(rr, U_0, T_r*0.6, 1)/get_rho(0, U_0, T_r*0.6, 1), label=L"\rho_{n_z=1}(r)", color=2, fill=0, alpha=0.3, lw=0, 
-# title=string(U_0)*"Er"
+title=string(U_0)*"Er"
 )
 plot!(rr*1e6, get_rho(rr, U_0, T_r, 0)/get_rho(0, U_0, T_r, 0), label=L"\rho_{n_z=0}(r)", color=1, fill=0, alpha=0.3, lw=0)
 omega_0 = rabi_0.(U_0*exp.(-2*rr.^2/w_0^2))
 omega_1 = rabi_1.(U_0*exp.(-2*rr.^2/w_0^2))
-plot!(rr[omega_0 .∉ 0]*1e6, omega_0[omega_0 .∉ 0],label=L"Ω_{n_z = 0}", color=1)
-plot!(rr[omega_1 .∉ 0]*1e6, omega_1[omega_1 .∉ 0],label=L"Ω_{n_z = 1}", color=2, ylims=(-0.01, 1.01))
+plot!(rr[omega_0 .∉ 0]*1e6, omega_0[omega_0 .∉ 0],label=L"Ω_{n_z = 0}(r)", color=1)
+plot!(rr[omega_1 .∉ 0]*1e6, omega_1[omega_1 .∉ 0],label=L"Ω_{n_z = 1}(r)", color=2, ylims=(-0.01, 1.01), xlabel="r (μm)")
 
 fig_potential = plot(rr*1e6, get_Unz(rr, U_0, w_0, 0), label=L"U_{n_z=0}(r)", color=1, bottom_margin=20Plots.px, left_margin=20Plots.px)
 plot!(rr*1e6, get_Unz(rr, U_0, w_0, 1), label=L"U_{n_z=1}(r)", color=2)
 hline!([0], color=:grey, ls=:dash, label="")
 plot!(rr*1e6, -U_0*exp.(-2*rr.^2/w_0^2), label=L"U(r)", legend=:bottomright, ylabel="Energy (Eᵣ)", color=:grey,)
 
-fig_tot = plot(fig_rabi, fig_potential, layout=(1 ,2), size=(800, 300) , 
-xlabel="r (μm)")
+# fig_tot = plot(fig_rabi, fig_potential, layout=(1 ,2), size=(800, 300) , xlabel="r (μm)")
+
+fig_tot = plot(fig_rabi, size=(400, 300))
 
 sim_params = Dict(
     "depth" => U_0,

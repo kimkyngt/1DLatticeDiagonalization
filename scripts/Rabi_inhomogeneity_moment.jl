@@ -1,4 +1,4 @@
-using DrWatson, Interpolations, QuadGK, LsqFit, Plots, LaTeXStrings
+using DrWatson, Plots, LaTeXStrings, LsqFit, Polynomials, Interpolations
 include(srcdir("tools.jl"))
 rabi_data = wload(datadir("rabi_carrier.jld2"))
 
@@ -9,46 +9,29 @@ depth = depth[p]
 rabi = rabi[:, p]
 
 # Make interpolation function from the numerical data
-rabi_0 = linear_interpolation(depth, rabi[1, :], extrapolation_bc=Flat())
-rabi_1 = linear_interpolation(depth[depth .> 7.2], rabi[2, :][depth .> 7.2], extrapolation_bc=Flat())
-rabi_2 = linear_interpolation(depth[depth .> 16], rabi[3, :][depth .> 16], extrapolation_bc=Flat())
+rabi_0 = LinearInterpolation(depth, rabi[1, :], extrapolation_bc=0)
+rabi_1 = LinearInterpolation(depth[depth .> 7.2], rabi[2, :][depth .> 7.2], extrapolation_bc=0)
+rabi_2 = LinearInterpolation(depth[depth .> 16], rabi[3, :][depth .> 16], extrapolation_bc=0)
 
-# rabi_1 = extrapolate(interpolate(depth[depth .> 7.2], rabi[2, :][depth .> 7.2], Gridded(Linear())), extrapolation_bc=Flat())
-
-#  Check the interpolation function
-function check_rabi_freqs(;kwargs...)
-    depths = range(1, 300, length=10000)
-    fig = plot(depths, rabi_0.(depths), label=L"n_z=0")
-    plot!(depths, rabi_1.(depths), label=L"n_z=1")
-    plot!(depths, rabi_2.(depths), label=L"n_z=2")
-    plot!(
-        xlabel="Lattice depth (Eᵣ)",
-        ylabel="Fractional rabi frequency"
-        ;kwargs...
-        )
-    # scatter!(depth, rabi[2, :], )
-    return fig
-end
-check_rabi_freqs(;xscale=:log10, yscale=:log10, title="Testing interpolation", legend=:bottomright)
-
-function get_rho(r, U_0, T_r, nz)
-    """r is number in meter, U_0 is number in Er, T_r is u"K" """
-    # ω̄ = 2*π*2.44u"Hz"*(2*√(U_0) - 1/2) # for the ground state
-    A = get_Unz(r, U_0, w_0, nz)*uconvert(NoUnits, Er/k_B/T_r)
-    return exp.(-A)
-end
-
-
-# Parameters
+# Fit Rabi frequency to a series of polynomial to extract Rabi frequency for the 2nd order radial sideband.
 U_0 = 15
-T_r = get_Tr(U_0)
-w_0 = 260e-6 # cavity waist
+w_0 = 260e-6
 rmax = w_0 # in 
+rmaxfit = w_0/3
 rr = range(-rmax, rmax, length=1000)
-y = rabi_1.(U_0*exp.(-2*rr.^2/w_0^2))
-DyDx = (y - circshift(y, 1))/(rr[2] - rr[1])
-DyDx2 = (DyDx - circshift(DyDx, 1))/(rr[2] - rr[1])
-plot(rr*1e6, y,label=L"Ω_{n_z = 1}(r)", grid=true)
-plot!(rr*1e6, DyDx/maximum(DyDx),label=L"Ω'_{n_z = 1}(r)",)
-plot!(xlabel="Lattice depth "*L"(E_r)")
-# plot!(rr*1e6, DyDx2/maximum(DyDx),label=L"Ω''_{n_z = 1}(r)",)
+ys = @. rabi_1(-get_U(U_0, rr, w_0))
+rr_tofit = rr[ys .∉ 0]
+ys_tofit = ys[ys .∉ 0]
+
+ys_tofit = ys_tofit[abs.(rr_tofit) .< rmaxfit]
+rr_tofit = rr_tofit[abs.(rr_tofit) .< rmaxfit]
+
+n = 10
+function model(x, p)
+    return sum([p[i]x.^(2*(i-1)) for i in range(1, n)])
+end
+p0 = [float(1.0) for ii in range(1, n)]
+fitresult = curve_fit(model, rr_tofit, ys_tofit, p0)
+print(fitresult.param)
+plot(rr[ys .∉ 0]*1e6, ys[ys .∉ 0])
+plot!(rr_tofit*1e6, model(rr_tofit, fitresult.param ))
