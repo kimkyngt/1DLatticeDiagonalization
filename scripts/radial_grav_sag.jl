@@ -16,8 +16,8 @@ function get_Tr(U_0)
     end
 end
 # Parameters
-U_0 = 6
-T_r_nz0 = get_Tr(U_0 * 1.2)
+U_0 = 3
+T_r_nz0 = get_Tr(U_0 * 1.2)*0 
 T_r_nz1 = T_r_nz0 / 1.4
 
 w_0 = 260e-6 # cavity waist

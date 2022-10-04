@@ -29,7 +29,7 @@ function check_rabi_freqs(;kwargs...)
 end
 
 # Parameters
-U_0 = 6
+U_0 = 4
 T_r = get_Tr(U_0)*1.2
 w_0 = 260e-6 # cavity waist
 rmax = w_0 # in 

@@ -72,5 +72,5 @@ annotate!(-1.3, 0.05.+ B, Plots.text(L"\lambda_{\mathrm{lat}}/2", 6,color=:black
 # fine tune
 plot!(axis=false, legend=false, grid=false, ticks=false, xlims=(-2.5, 2), size = ((3+3/8)*96, (3+3/8)*96*2.3/4), background_color = RGBA(1,1,1,0))
 
-Plots.pdf(plotsdir("lattice_diagram.pdf"))
+# Plots.pdf(plotsdir("lattice_diagram.pdf"))
 plot!()

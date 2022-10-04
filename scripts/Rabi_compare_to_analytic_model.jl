@@ -41,10 +41,10 @@ fig = check_rabi_freqs(
 # scatter!(depth[depth .> 16], rabi[3, :][depth .> 16])
 
 
-Plots.pdf(
-    fig, 
-    plotsdir("Rabi_interpolation.pdf")
-    )
+# Plots.pdf(
+#     fig, 
+#     # plotsdir("Rabi_interpolation.pdf")
+#     )
 
 # Plots.pdf(
 #     check_rabi_freqs(;xlims=(10, 16), ylims=(0.05, 0.3), title="Testing interpolation", legend=:bottomright), 

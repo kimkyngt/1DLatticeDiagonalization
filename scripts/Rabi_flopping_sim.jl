@@ -44,7 +44,7 @@ plot!(rr*1e6, exp.(-2*rr.^2/w_0^2), label="-U(r)/U₀", legend=:right)
 annotate!(150, 1.05, string(round(U_0, digits=2))*"Er, "*string(round(ustrip(T_r), digits=2))*"nK", 9)
 
 # fig2 rabi flopping
-tt = collect(range(0, 12π, length=100))
+tt = collect(range(0, 40π, length=100))
 pebar = [get_pe_avg(U_0, T_r, t) for t in tt] / get_normalziation(U_0, T_r)
 fig_rabi = plot(tt/π, pebar, st=:scatter, label="Sim")
 model(t, p) = p[1] .+ p[2]*exp.(-p[3] * t) .* sin.(p[4]*t/2).^2

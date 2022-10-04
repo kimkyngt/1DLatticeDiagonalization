@@ -59,6 +59,6 @@ label=[L"(kz)^0" L"(kz)^1" L"(kz)^2" L"(kz)^4" L"(kz)^6"], ylabel="Expectation v
 xlabel="Lattice depth (Eᵣ)")
 
 fig = plot(fig_nz0, fig_nz1, layout=(2, 1), size=(500, 500), margins=10Plots.px,)
-Plots.pdf(fig, plotsdir("moments", "moments_axial.pdf"))
-Plots.png(fig, plotsdir("moments", "moments_axial.png"))
+# Plots.pdf(fig, plotsdir("moments", "moments_axial.pdf"))
+# Plots.png(fig, plotsdir("moments", "moments_axial.png"))
 fig
