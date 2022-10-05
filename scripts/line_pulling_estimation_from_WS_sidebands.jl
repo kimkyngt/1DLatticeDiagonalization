@@ -25,11 +25,13 @@ plot!(
 Plots.pdf(fig, plotsdir("line_pulling_WS", "Rabi_frequency_products.pdf"))
 
 Δ = 868
-Ω_0 = 1/0.38 * 0.5
+T_rabi = 1.2
+Ω_0 = 1/T_rabi * 0.5
 fig2 = plot(depth, Ω_0^2*rabi[1, p].*rabi[2, p]/Δ/ustrip(fclock), label=L"\Omega_0 \Omega_1/\Delta")
 plot!(depth, Ω_0^2*rabi[1, p].*rabi[3, p]/Δ/ustrip(fclock), label=L"\Omega_0 \Omega_2/\Delta")
 plot!(depth, Ω_0^2*rabi[1, p].*rabi[4, p]/Δ/ustrip(fclock), label=L"\Omega_0 \Omega_3 /\Delta")
 plot!(
+    title="T_rabi = "*string(T_rabi),
     yscale=:log10, 
     # xscale=:log10, 
     ylims=(1e-20, 3e-18),
@@ -39,4 +41,5 @@ plot!(
     yminorticks=10
     )
 fig2
-Plots.pdf(fig2, plotsdir("line_pulling_WS", "Line_pulling_estimation.pdf"))
+Plots.pdf(fig2, plotsdir("line_pulling_WS", "Line_pulling_estimation_"*savename(Dict([("T_rabi", T_rabi)]))*".pdf"))
+Plots.png(fig2, plotsdir("line_pulling_WS", "Line_pulling_estimation_"*savename(Dict([("T_rabi", T_rabi)]))*".png"))

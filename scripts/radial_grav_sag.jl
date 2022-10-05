@@ -16,8 +16,8 @@ function get_Tr(U_0)
     end
 end
 # Parameters
-U_0 = 3
-T_r_nz0 = get_Tr(U_0 * 1.2)*0 
+U_0 = 551.7*(0.54 - 0.0017 - 0.5335)*0+20
+T_r_nz0 = 17u"nK"
 T_r_nz1 = T_r_nz0 / 1.4
 
 w_0 = 260e-6 # cavity waist
@@ -30,7 +30,7 @@ fig = plot(rr * 1e6, -U_0 * exp.(-2 * rr .^ 2 / w_0^2), label="-U(x)/Eᵣ", mino
 plot!(rr * 1e6, -U_0 * exp.(-2 * rr .^ 2 / w_0^2) .+ ustrip(m87Sr * g_0 * sin(θtilt) / Er) * rr, label="-U(x)/Eᵣ + mgsin(θ)x", minorticks=5, size=(600, 400), lc=:black, lw=1)
 plot!(rr * 1e6, get_Unz_sag(rr, U_0, w_0, 0), label="nz=0", lc=1)
 plot!(rr * 1e6, get_Unz_sag(rr, U_0, w_0, 1), label="nz=1", lc=2)
-# plot!(rr*1e6, get_Unz_sag(rr, U_0, w_0, 2), label="nz=2")
+plot!(rr*1e6, get_Unz_sag(rr, U_0, w_0, 2), label="nz=2")
 # plot!(rr*1e6, get_Unz_sag(rr, U_0, w_0, 3), label="nz=3")
 
 
