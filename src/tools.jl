@@ -7,13 +7,14 @@ end
 
 function get_U(z, ρ, U0)
     """Give potential in a units of Er"""
-    (-ustrip(U0)*(cos(z))^2*exp(-2*ρ^2/w0^2) .+ 867/868.23*ustrip(m87Sr*g_n/k813)*z)/ustrip(Er)
+    (-ustrip(U0)*(cos(z))^2*exp(-2*ρ^2/w_0^2) .+ 867/868.23*ustrip(m87Sr*g_n/k813)*z)/ustrip(Er)
 end
 
-function get_U(U_0, ρ, w_0)
-    """get_U(U_0, ρ, w_0)"""
-    -U_0*exp.(-2*ρ.^2/w_0^2)
-end
+# function get_U(U_0, ρ, w_0)
+#     """get_U(U_0, ρ, w_0)"""
+#     print(-2*ρ.^2/w_0^2)
+#     -U_0*exp.(-2*ρ.^2/w_0^2)
+# end
 
 function get_Unz(r, U0, w_0, nz)
     """Give potential in a units of Er"""
@@ -229,4 +230,4 @@ function get_periodic_zpower(zz, power)
     (zz .- pi*floor.(zz/pi .+ 1/2) ).^power
 end
 
-print("tools.jl imported \n")
+println("tools.jl imported \n")

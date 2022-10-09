@@ -64,15 +64,15 @@ end
 # fig = fit_to_data()
 
 
-# # Save data
-# tosave = Dict([("depth", depths), ("rabi_freqs", abs.(rabi_freqs))])
-# wsave(datadir("rabi_frequencies.jld2"), tosave)
-# open(datadir("rabi_frequencies.json"),"w") do f
-#     JSON.print(f,tosave) 
-# end
+# Save data
+tosave = Dict([("depth", depths), ("rabi_freqs", rabi_freqs)])
+wsave(datadir("rabi_frequencies.jld2"), tosave)
+open(datadir("rabi_frequencies.json"),"w") do f
+    JSON.print(f,tosave) 
+end
 
 
-# carrier only 
+# # carrier only 
 rabi_carrier = zeros(Complex, 3, size(df)[1])
 
 for ii in range(1, size(df)[1])
@@ -80,7 +80,7 @@ for ii in range(1, size(df)[1])
     rabi_carrier[:, ii] = get_rabi_carrier_frequency(df, ii)
 end
 
-tosave = Dict([("depth", depths), ("rabi_carrier", abs.(rabi_carrier))])
+tosave = Dict([("depth", depths), ("rabi_carrier", rabi_carrier)])
 wsave(datadir("rabi_carrier.jld2"), tosave)
 open(datadir("rabi_carrier.json"),"w") do f
     JSON.print(f,tosave) 

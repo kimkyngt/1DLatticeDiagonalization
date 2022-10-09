@@ -49,10 +49,10 @@ function draw_wfn_script(df, data_indx, siteindx;kwargs...)
     return fig
 end
 
-draw_wfn_script(df, findfirst(df[:, "depth"] .== 4), 0, legend=:false, 
+draw_wfn_script(df, findfirst(df[:, "depth"] .== 2.5), 0, legend=:false, 
 # ylims=(-18, 2), 
 size=((3+3/8)*96*2, (3+3/8)*96*2), grid=:false, axis=:off, ticks=:false,ylabel="Energy", font="helvetica")
 # Plots.pdf(plotsdir("wfn_in_lattice.pdf"))
 
-plot_eigen_spectrum(df,findfirst(df[:, "depth"] .== 15))
+plot_eigen_spectrum(df,findfirst(df[:, "depth"] .== 2.5))
 # Plots.pdf(plotsdir("Eigen_energy.pdf"))
