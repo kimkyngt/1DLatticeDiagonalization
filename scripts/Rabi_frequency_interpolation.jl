@@ -6,7 +6,7 @@ depth = rabi_data["depth"]
 rabi = rabi_data["rabi_carrier"]
 p = sortperm(depth)
 depth = depth[p]
-rabi = rabi[:, p]
+rabi = real.(rabi[:, p])
 
 # Make interpolation function from the numerical data
 
@@ -16,13 +16,14 @@ rabi_2 = LinearInterpolation(depth[depth .> 16], rabi[3, :][depth .> 16], extrap
 
 #  Check the interpolation function
 function check_rabi_freqs(;kwargs...)
-    depths = range(5, 30, length=10000)
+    depths = range(2.5, 18, length=10000)
     fig = plot(depths, rabi_0.(depths), label=L"n_z=0")
-    plot!(depths[rabi_1.(depths) .∉ 0], rabi_1.(depths)[rabi_1.(depths) .∉ 0], label=L"n_z=1")
+    # plot!(depths[rabi_1.(depths) .∉ 0], rabi_1.(depths)[rabi_1.(depths) .∉ 0], label=L"n_z=1")
     # plot!(depths, rabi_2.(depths), label=L"n_z=2")
     plot!(
         xlabel="Lattice depth (Eᵣ)",
-        ylabel="Fractional rabi frequency",
+        ylabel="Relative Ω",
+        xticks=[5, 10, 15],
         # minorticks=10,
         grid=:true, 
         size=(400, 300),

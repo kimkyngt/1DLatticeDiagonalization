@@ -66,7 +66,7 @@ function draw_wfn(df, data_indx, siteindx;kwargs...)
 end
 
 
-function plot_eigen_spectrum(df, ii)
+function plot_eigen_spectrum(df, ii;kwrags...)
     """Plot eigenvalue specturm to check the calculation"""
     F = df[ii, "solution"]
     zz = df[ii, "zz"]
@@ -83,8 +83,8 @@ function plot_eigen_spectrum(df, ii)
     plot!(
         [get_mean_position(real.(F.vectors[:,ii]), zz) for ii in range(1, numsites*maxbandnum)]/π,
         real.(F.values[1:numsites*maxbandnum]),
-		marker=:hline, markerstrokewidth=3, 
-        markersize=6,
+		marker=:hline, markerstrokewidth=4, 
+        markersize=10,
         st = :scatter,
         color=1,
         label=L"E_n(\langle z \rangle)"
@@ -93,7 +93,8 @@ function plot_eigen_spectrum(df, ii)
         legend=:bottomright,
         xlabel="Lattice site, "*L"2z / \lambda_L",
         ylabel="Energy (Eᵣ)",
-        grid=:true
+        grid=:true,
+        ;kwrags...
         )
     return fig
 end

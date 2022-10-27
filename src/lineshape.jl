@@ -79,17 +79,19 @@ function get_spectrum(params::Dict)
 end
 
 function get_discriminator(result::Dict, modulation_depth::Number)
+	# modulation depth in Hz
 	@unpack detunings, exc_frac, parameters = result
 	@unpack T_rabi = parameters
 	dx = detunings[2] - detunings[1]
-	Nshift = Int(round(modulation_depth/dx))
+	Nshift = Int(round(2*pi*modulation_depth/dx))
 	diff_frac = circshift(exc_frac, Nshift) - circshift(exc_frac, -Nshift)
 	diff_frac = diff_frac[abs.(detunings) .< 2*modulation_depth]
 	detunings = detunings[abs.(detunings) .< 2*modulation_depth]
-	frac_to_Hz = LinearInterpolation(diff_frac, detunings, extrapolation_bc=0)
+	p = sortperm(detunings)
+	frac_to_detuning = LinearInterpolation(diff_frac[p], detunings[p], extrapolation_bc=0)
 	# _detunings = range(minimum(detunings)*0.9, maximum(detunings)*0.9, length=100)
 
-	return frac_to_Hz, diff_frac
+	return frac_to_detuning, diff_frac
 end
 
 function get_spectrum_loss(params::Dict)
@@ -97,7 +99,7 @@ function get_spectrum_loss(params::Dict)
     Get a rabi lineshape with a decay within the system.
     See notebooks/WS_ladder_clock_loss_test.jl
     """
-	@unpack Omega0, Omega1, Omega2, detuning_max, detuning_num, T_rabi, Delta, initial_condition, N_lattice, reltol , gamma = params
+	@unpack Omega0, Omega1, Omega2, detuning_max, detuning_num, T_rabi, Delta, initial_spin, N_lattice, reltol , gamma = params
 	ϕ = 813*pi/698
 	N_cutoff = N_lattice - 1
 	b_fock = FockBasis(N_cutoff)
@@ -146,22 +148,22 @@ function get_spectrum_loss(params::Dict)
 	function get_exc_fac(detuning)
 		# Solve dynamics and get final excitation fraction
 
-        if initial_condition == "pure"
+        if initial_spin == "down"
             # println("Intial condition: pure")
             ψ_0 = normalize!(
                 Ket(b_fock, vcat([0 for ii in 1:N_cutoff/2], 1, [0 for ii in 1:N_cutoff/2],)) ⊗ spindown(b_spin)
             )
-        elseif initial_condition =="plus"
+        elseif initial_spin =="up"
             # println("Intial condition: plus")
             ψ_0 = normalize!(
-                Ket(b_fock, vcat([0 for ii in 1:N_cutoff/2], 1, 1, [0 for ii in 2:N_cutoff/2],)) ⊗ spindown(b_spin)
+                Ket(b_fock, vcat([0 for ii in 1:N_cutoff/2], 1, [0 for ii in 1:N_cutoff/2],)) ⊗ spinup(b_spin)
             )
         end
 		tspan = range(0, T_rabi, length=2)
 		tout, ψ_t = timeevolution.master(tspan, ψ_0, get_H_tot(detuning), [sqrt(gamma)*get_J()], alg = DP5(), reltol=reltol, maxiters=1e9)
 
 		exc_frac = expect(one(b_fock)⊗(sz+one(b_spin))/2, ψ_t[end])
-		return exc_frac
+		return abs(exc_frac)
 	end
 
 

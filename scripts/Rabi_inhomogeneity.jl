@@ -6,7 +6,7 @@ depth = rabi_data["depth"]
 rabi = rabi_data["rabi_carrier"]
 p = sortperm(depth)
 depth = depth[p]
-rabi = rabi[:, p]
+rabi = abs.(rabi[:, p])
 
 # Make interpolation function from the numerical data
 
@@ -29,7 +29,7 @@ function check_rabi_freqs(;kwargs...)
 end
 
 # Parameters
-U_0 = 4
+U_0 = 15
 T_r = get_Tr(U_0)*1.2
 w_0 = 260e-6 # cavity waist
 rmax = w_0 # in 

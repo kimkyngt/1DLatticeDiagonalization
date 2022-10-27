@@ -1,4 +1,4 @@
-using PhysicalConstants, PhysicalConstants.CODATA2018, Unitful, UnitfulRecipes, LaTeXStrings, Plots, LinearAlgebra, QuantumOptics, OhMyREPL
+using PhysicalConstants, PhysicalConstants.CODATA2018, Unitful, LaTeXStrings, Plots, LinearAlgebra, QuantumOptics, OhMyREPL
 
 λ813 = 813.4280e-9u"m"
 k813 = 2*π/λ813

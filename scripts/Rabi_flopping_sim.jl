@@ -8,7 +8,7 @@ depth = rabi_data["depth"]
 rabi = rabi_data["rabi_carrier"]
 p = sortperm(depth)
 depth = depth[p]
-rabi = rabi[:, p]
+rabi = real.(rabi[:, p])
 
 
 rabi_0 = LinearInterpolation(depth, rabi[1, :], extrapolation_bc=Flat())
@@ -29,10 +29,12 @@ function get_normalziation(U_0, T_r)
     N, err = quadgk(r -> r*get_rho(r, U_0, T_r), 0, rmax)
     return N
 end
-
+function get_Tr(U_0)
+    31e-9*(U_0 - 2.2)^(0.58)*1u"K"
+end
 # Parameters
-U_0 = 5
-T_r = 40u"nK"#80u"nK"
+U_0 = 15
+T_r = get_Tr(U_0)
 w_0 = 260e-6 # cavity waist
 rmax = w_0*2 # in 
 
@@ -44,7 +46,7 @@ plot!(rr*1e6, exp.(-2*rr.^2/w_0^2), label="-U(r)/U₀", legend=:right)
 annotate!(150, 1.05, string(round(U_0, digits=2))*"Er, "*string(round(ustrip(T_r), digits=2))*"nK", 9)
 
 # fig2 rabi flopping
-tt = collect(range(0, 40π, length=100))
+tt = collect(range(0, 4π, length=100))
 pebar = [get_pe_avg(U_0, T_r, t) for t in tt] / get_normalziation(U_0, T_r)
 fig_rabi = plot(tt/π, pebar, st=:scatter, label="Sim")
 model(t, p) = p[1] .+ p[2]*exp.(-p[3] * t) .* sin.(p[4]*t/2).^2

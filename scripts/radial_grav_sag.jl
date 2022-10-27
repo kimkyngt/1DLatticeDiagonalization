@@ -9,14 +9,10 @@ function _get_rho(r, U_0, T_r; nz=0)
     return rho
 end
 function get_Tr(U_0)
-    if U_0 > 15
-        return 42 * √(U_0) * u"nK"
-    else
-        return (-45.2 + 14.1 * U_0) * u"nK"
-    end
+    31e-9*(U_0 - 2.2)^(0.58)*1u"K"
 end
 # Parameters
-U_0 = 551.7*(0.54 - 0.0017 - 0.5335)*0+20
+U_0 = 551.7*(0.54 - 0.0017 - 0.532)
 T_r_nz0 = 17u"nK"
 T_r_nz1 = T_r_nz0 / 1.4
 
